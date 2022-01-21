@@ -7,36 +7,36 @@ const users = require("./users");
  */
 const app = Express();
 
-app.use("/pictures", Express.static(__dirname+"/pictures"));
-
-app.get("/users/", function(req, res) {
+app.get("/users", function(req, res) {
     var data = users;
     if(req.query.gender) {
-        data = data.filter(user => user.gender === req.query.gender)
+        data = data.filter(function(user) {
+            return user.gender == req.query.gender
+        });
+    }
+
+    if(req.query.size) {
+        data = data.slice(0, req.query.size);
     }
 
     const result = {
         count: data.length,
-        filter: req.query,
-        users: data
-    }
+        data: data
+    };
 
-    res
-        .status(200)
-        .send(result)
+    res.send(result);
 });
 
-app.get("/users/:id([0-9]+)", function(req, res) {
-    const result = users[req.params.id];
+app.get("/users/:id", function(req, res) {
+    const id = req.params.id;
+    const user = users[id];
 
-    if(!result)
-        res
-            .status(404)
-            .send({message: "not-found"})
+    if(!user) {
+        res.status(404).send({message: "Not Found"});
+    } else {
+        res.send(users[id]);
+    }
 
-    res
-        .status(200)
-        .send(result)
 });
 
 app.listen(8000, function() {
