@@ -6,9 +6,10 @@ const users = require("./users");
  * Express App
  */
 const app = Express();
+app.use(Express.json());
 
-app.get("/users", function(req, res) {
-    var data = users;
+app.get("/users/", function(req, res) {
+    var data = users.filter(function(user) { return !!user; });
     if(req.query.gender) {
         data = data.filter(function(user) {
             return user.gender == req.query.gender
@@ -37,6 +38,35 @@ app.get("/users/:id", function(req, res) {
         res.send(users[id]);
     }
 
+});
+
+app.post("/users/", function(req, res) {
+    users.push(req.body);
+    res.send({message: "User Added"});
+});
+
+app.put("/users/:id", function(req, res) {
+    const id = req.params.id;
+    users[id] = req.body;
+
+    res.send({message: "User Updated"});
+});
+
+app.patch("/users/:id", function(req, res) {
+    const id = req.params.id;
+    const user = users[id];
+
+    users[id] = Object.assign(user, req.body);
+
+    res.send({message: "User Updated"});
+});
+
+app.delete("/users/:id", function(req, res) {
+    const id = req.params.id;
+
+    delete users[id];
+
+    res.send({message: "User deleted"});
 });
 
 app.listen(8000, function() {
