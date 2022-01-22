@@ -7,6 +7,15 @@ const users = require("./users");
  */
 const app = Express();
 app.use(Express.json());
+app.use("/pictures", Express.static(__dirname+"/pictures"));
+
+/**
+ * Bütün isteklerin geçtiği bir middleware
+ */
+app.use(function(req, res, next) {
+    console.log("Mevcut istek:", req.url);
+    next();
+});
 
 app.get("/users/", function(req, res) {
     var data = users.filter(function(user) { return !!user; });
